@@ -1,4 +1,269 @@
-1. 寻找中位数
+1. 图最短路径
+（1）时间限制: 1000 ms内存限制: 45536 KB
+（2）问题描述
+        在一张无向图中求源点到终点的最短距离（本题可能会求多对<源点, 终点> 的最短距离），图中边长为整数1或2或3。
+        题目保证询问的点对之间可达。
+（3）输入格式
+        第1行：#顶点数n #边数m  #问题数q（即 <源点, 终点>pairs数）   (n <= 100000, m <= 200000, q<=250)
+        第2行至m+1 行，每行描述一条边：
+       边的第一个顶点   边的第二个顶点  边长
+       第m+2行至m+q+1行，每行描述一对 <源点, 终点>编号：第一对的源点编号   第一对的终点编号...
+      <注：数据的间隔都是用空格> 
+（4）输出格式
+        输q对<源点, 终点>的最短距离值, 每行一个
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <tuple>
+#include <limits>
+using namespace std;
+const int INF = numeric_limits<int>::max();
+struct Edge {
+    int to, weight;
+};
+void bfs(int start, const vector<vector<Edge>>& graph, vector<int>& distances) {
+    queue<int> q;
+    q.push(start);
+    distances[start] = 0;
+    while (!q.empty()) {
+        int node = q.front();
+        q.pop();
+
+        for (const auto& edge : graph[node]) {
+            int nextNode = edge.to;
+            int weight = edge.weight;
+
+            if (distances[nextNode] > distances[node] + weight) {
+                distances[nextNode] = distances[node] + weight;
+                q.push(nextNode);
+            }
+        }
+    }
+}
+int main() {
+	std::ios::sync_with_stdio(false);
+    int n, m, q;
+    cin >> n >> m >> q;
+
+    vector<vector<Edge>> graph(n + 1);
+    
+    for (int i = 0; i < m; ++i) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        graph[u].push_back({v, w});
+        graph[v].push_back({u, w});
+    }
+    for (int i = 0; i < q; ++i) {
+        int start, end;
+        cin >> start >> end;
+
+        vector<int> distances(n + 1, INF);
+        bfs(start, graph, distances);
+
+        cout << distances[end] << endl;
+    }
+    return 0;
+}
+
+
+2. 寻找丢失的筷子
+（1）时间限制: 1000 ms内存限制: 65536 KB
+（2）问题描述
+        小明买了N对筷子，每对筷子由两只长度相同的筷子组成，不同对筷子的长度也可能相同。每只筷子长度均为正整数。
+       一天，马虎的小明丢失了两只长度不同的筷子，只剩下2N-2只筷子，他想知道丢失的两只筷子的长度分别是多少？（长度按从小到大排列）
+（3）输入格式
+        第一行一个整数N，表示筷子的对数。
+        接下来2N-2行，每行一个整数，依次表示剩下2N-2只筷子的长度。 
+（3）输出格式
+        两个整数（按从小到大排列），表示丢失筷子的长度。
+#include <iostream>  
+#include <vector>  
+#include <unordered_map>    
+using namespace std;    
+int main() {  
+    int N;  
+    cin >> N;  // 使用 cin 读取 N  
+    vector<int> chopsticks(2*N-2);  // 定义并初始化 chopsticks 数组  
+    for (int i = 0; i < 2*N-2; ++i) {  
+        cin >> chopsticks[i];  // 使用 cin 读取每个筷子的长度  
+    }    
+    unordered_map<int, int> countMap;  
+    for (int length : chopsticks) {  
+        ++countMap[length];  // 统计每个长度的筷子数量  
+    }    
+   int lostLength1 = -1, lostLength2 = -1;  
+    for (auto& entry : countMap) {  
+        if (entry.second % 2 != 0) {  // 找到数量为奇数的筷子长度  
+            if (lostLength1 == -1) {  
+                lostLength1 = entry.first;  
+            } else {  
+                lostLength2 = entry.first;  
+                break;  // 只需要找到两个即可  
+            }  
+        }  
+    }    
+    // 输出结果，确保 lostLength1 小于 lostLength2  
+    if (lostLength2 > lostLength1) {  
+        printf("%d %d\n",lostLength1,lostLength2);  
+    } else {  
+       printf("%d %d\n",lostLength2,lostLength1); 
+    }  
+    return 0;  
+}
+
+
+3. 大规模稀疏线性方程组的迭代求解
+ （1）时间限制: 1000 ms内存限制: 20000 KB
+ （2）问题描述
+         本题目标为求解大规模稀疏线性方程组：Ax = b，其中A是稀疏矩阵
+        （在矩阵中，若数值为0的元素数目远远多于非0元素的数目，并且非0元素分布没有规律时，则称该矩阵为稀疏矩阵）。
+         本次实验中给出的矩阵 A 均为维数不小于 1000不大于55000 的非奇异方阵，解的准确程度由残差值 ||AX - b||2给出，要求残差值小于 0.1。
+（3）输入格式
+        第 1 行：两个整数，分别是矩阵 A 的行（列）数 m，矩阵 A 中非 0 值的个数 k（k不超过300000）；
+        第 2 行 —— 第 k+1 行：每一行代表矩阵 A 中的一个非 0 元素，包括两个整数和一个浮点数，分别代表该元素的 行号、列号、元素取值；
+        第 k+2 行 —— 第 k+m+1 行：每一行代表方程组中 b 的一个元素取值，按照在向量 b 中的顺序排列，为浮点数。
+        注：矩阵元素行列号均从 0 开始。
+（4）输出格式
+        共输出 m 行。
+        第 1 行 —— 第 m 行：每一行一个浮点数，依次代表解向量元素 xi，i=1, 2, ..., m。
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <iomanip>
+#include <algorithm>
+#include<tuple>
+using namespace std;
+
+class SparseMatrix {
+public:
+    vector<double> values; 
+    vector<int> col_idx;   
+    vector<int> row_ptr;   
+    int m;                 
+    SparseMatrix(int m) : m(m) {
+        row_ptr.resize(m + 1, 0);
+    }
+
+    void add_value(int row, int col, double value) {
+        col_idx.push_back(col);
+        values.push_back(value);
+        row_ptr[row + 1]++; 
+    }
+    void finalize_and_sort() {
+        for (int i = 1; i <= m; i++) {
+            row_ptr[i] += row_ptr[i - 1];
+        }
+        /*vector<double> sorted_values(values.size());
+        vector<int> sorted_col_idx(col_idx.size());
+        for (int i = 0; i < idx.size(); ++i) {
+            sorted_values[i] = values[idx[i]];
+            sorted_col_idx[i] = col_idx[idx[i]];
+        }
+
+        values = sorted_values;
+        col_idx = sorted_col_idx;*/
+        
+
+    }
+    int row_of_index(int global_idx) const {
+        int row_count = 0;
+        for (int i = 0; i < m + 1; ++i) {
+            if (global_idx < row_ptr[i]) {
+                return i - 1;
+            }
+            row_count += row_ptr[i] - (i > 0 ? row_ptr[i - 1] : 0);
+        }
+        return -1; 
+    }
+
+    void mat_vec_mult(const vector<double>& x, vector<double>& result) const {
+        fill(result.begin(), result.end(), 0.0); 
+        for (int row = 0; row < m; row++) {
+            for (int idx = row_ptr[row]; idx < row_ptr[row + 1]; idx++) {
+                int col = col_idx[idx];
+                result[row] += values[idx] * x[col];
+            }
+        }
+    }
+};
+
+void gauss_seidel(const SparseMatrix& A, const vector<double>& b, vector<double>& x, double tol = 1e-6, int max_iter = 1000) {
+    int m = A.m;
+    vector<double> r(m), Ap(m); 
+    for (int iter = 0; iter < max_iter; iter++) {
+        bool converged = true; 
+        for (int row = 0; row < m; row++) {
+            double sum = 0.0; 
+            for (int idx = A.row_ptr[row]; idx < A.row_ptr[row + 1]; idx++) {
+                int col = A.col_idx[idx];
+                if (col < row) { 
+                    sum += A.values[idx] * x[col];
+                }
+                else if (col > row) { 
+                    sum += A.values[idx] * x[col];
+                }
+            }
+            int diag_idx = -1;
+            for (int idx = A.row_ptr[row]; idx < A.row_ptr[row + 1]; idx++) {
+                if (A.col_idx[idx] == row) {
+                    diag_idx = idx;
+                    break;
+                }
+            }
+            if (diag_idx != -1) {
+                double new_x = (b[row] - sum) / A.values[diag_idx];
+                if (abs(new_x - x[row]) > tol) {
+                    converged = false;
+                }
+                x[row] = new_x;
+            }
+        }
+        A.mat_vec_mult(x, Ap);
+        double res_norm = 0.0;
+        for (int i = 0; i < m; i++) {
+            r[i] = b[i] - Ap[i];
+            res_norm += r[i] * r[i];
+        }
+        if (sqrt(res_norm) < tol || converged) {
+            break;
+        }
+    }
+}
+
+int main() {
+	std::ios::sync_with_stdio(false); 
+    int m, k;
+    cin >> m >> k;
+    SparseMatrix A(m); 
+    std :: vector<std :: tuple<int, int, double>> entries (k);
+    for (int i = 0; i < k; ++i) {
+        int row, col;
+        double value;
+        //scanf ("%d %d %1f", &row, &col, &value);
+        cin>>row>>col>>value;
+        entries[i] = std :: make_tuple(row, col, value);
+    }
+    std :: sort(entries.begin(), entries.end());
+    for(tuple<int, int, double>en:entries){
+        A.add_value(get<0>(en),get<1>(en),get<2>(en));
+    }
+
+    A.finalize_and_sort();
+
+    vector<double> b(m);
+    for (int i = 0; i < m; i++) {
+        cin >> b[i];
+    }
+    vector<double> x(m, 0.0);
+    gauss_seidel(A, b, x);
+    for (double xi : x) {
+        cout << xi << endl;
+    }
+    return 0;
+}
+
+
+7. 寻找中位数
 （1）时间限制: 1000 ms内存限制: 5000 KB
 （2）问题描述
         某公司的查询系统需要添加一种特殊的查询功能，该公司拜托你进行实现，
