@@ -11,3 +11,8 @@ Bonjour!
 5. 2024.11 信息安全专业的数据与算法（OJ平台代码）
 6. 2024.11 离散数学II作业
 7. 2024.11 高等代数II课程作业（是一个矩阵加密算法，java版本，但没有写完）
+
+致谢：
+感谢以下大佬，ta们共同参与到了代码的开发和debug过程中（排名不分先后，想到谁就写谁了）
+Miss Meng, Mr.Wu, Miss Thrill, Mr.Liquid, Mr.Zhang, Mr.Chen.
+
