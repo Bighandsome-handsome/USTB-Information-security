@@ -14,5 +14,5 @@ Bonjour!
 
 致谢：
 感谢以下大佬，ta们共同参与到了代码的开发和debug过程中（排名不分先后，想到谁就写谁了）
-Miss Meng, Miss Thrill, Mr.Miku, Mr.Liquid, Mr.Zhang, Mr.unEmpathy.
+Miss Meng, Miss Thrill, Mr.Miku, Mr.Liquid, Mr.Zhang, Mr.unEmpathy, Mr.Keller.
 
